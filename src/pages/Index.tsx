@@ -4,6 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Beaker, FlaskConical, Atom, BookOpen, Users, Microscope, Shield, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
+import save from '../assets/save.png'
+import visual from '../assets/3d-modeling.png'
+import score from '../assets/digital-score.png'
+import experiment from '../assets/experiment.png'
+import image from '../assets/image.png'
+import logo from '../assets/Reactron_Logo.png'
 
 // Orbit Component (same as before)
 const OrbitLayout = () => {
@@ -103,17 +109,38 @@ const Index = () => {
       <div className="bg-gradient-to-br from-[#f9b84c] via-[#845ec2] to-[#2c73d2] text-white">
         
         {/* Header */}
-        <header className="container mx-auto px-6 py-6 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Virtual Science Lab</h1>
+        <header className="container mx-auto py-6 flex justify-between">
+          <img src={logo} alt="Logo" className="h-12 justify-items-start cursor-pointer" onClick={() => navigate('/')} />
           <div>
             {user ? (
-              <Button onClick={() => navigate('/lab')} className="bg-white text-black px-6 py-2">
-                Enter Lab
-              </Button>
+          <div className="relative group">
+            <button className="relative inline-block p-px font-semibold leading-6 text-white bg-gray-800 shadow-2xl cursor-pointer rounded-xl shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95">
+              <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              <span className="relative z-10 block px-6 py-3 rounded-xl bg-gray-950">
+                <div className="relative z-10 flex items-center space-x-2">
+                  <span className="transition-all duration-500 group-hover:translate-x-1" onClick={() => navigate ('/lab')}>Enter Lab</span>
+                  <svg className="w-6 h-6 transition-transform duration-500 group-hover:translate-x-1" data-slot="icon" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clipRule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" fillRule="evenodd" />
+                  </svg>
+                </div>
+              </span>
+            </button>
+        </div>
+              
             ) : (
-              <Button onClick={() => navigate('/auth')} className="bg-white text-black px-6 py-2">
-                Sign In
-              </Button>
+          <div className="relative group">
+            <button className="relative inline-block p-px font-semibold leading-6 text-white bg-gray-800 shadow-2xl cursor-pointer rounded-xl shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95">
+              <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              <span className="relative z-10 block px-6 py-3 rounded-xl bg-gray-950">
+                <div className="relative z-10 flex items-center space-x-2">
+                  <span className="transition-all duration-500 group-hover:translate-x-1" onClick={() => navigate ('/auth')}>Let's Get Started</span>
+                  <svg className="w-6 h-6 transition-transform duration-500 group-hover:translate-x-1" data-slot="icon" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clipRule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" fillRule="evenodd" />
+                  </svg>
+                </div>
+              </span>
+            </button>
+          </div>
             )}
           </div>
         </header>
@@ -258,12 +285,15 @@ const Index = () => {
 
 {/* MVP Features Section with Glassy Cards */}
 <section className="relative py-20 px-6 md:px-12 bg-gradient-to-br from-indigo-900 via-gray-900 to-black">
-  <div className="max-w-7xl mx-auto">
+  <div className="max-w-7xl mx-auto relative">
     
+    {/* Glassy Background Panel */}
+    <div className="absolute inset-0 rounded-3xl bg-white/10 backdrop-blur-3xl border border-white/20 shadow-2xl shadow-black/40 pointer-events-none -z-10"></div>
+
     {/* Section Header */}
-    <div className="text-center mb-16">
+    <div className="text-center mb-16 relative z-10">
       <span className="px-4 py-1 text-sm md:text-base font-medium bg-white/10 text-white rounded-full border border-white/20">
-        HIGHLIGHTS
+        BETA 
       </span>
 
       <h2 className="text-3xl md:text-5xl font-bold mt-4 text-white leading-snug">
@@ -276,158 +306,292 @@ const Index = () => {
     </div>
 
     {/* Features Grid */}
-    <div className="grid md:grid-cols-6 gap-6">
-      
-      {/* Virtual Experiments (Wide Card) */}
-      <div className="md:col-span-4 rounded-2xl p-8 
-        bg-gradient-to-br from-white/20 to-white/5 
-        backdrop-blur-xl border border-white/30 
-        shadow-2xl shadow-black/30 
-        text-white flex flex-col justify-between 
-        hover:scale-105 transition-transform duration-300">
-        
-        <h3 className="text-2xl font-semibold mb-3">Virtual Experiments</h3>
-        <p className="text-white/80">
-          Safely simulate chemical reactions in an interactive 3D virtual lab.
-        </p>
+    
+<div className="grid md:grid-cols-6 gap-20 md:col-span-2 rounded-2xl p-20
+    bg-white/10 backdrop-blur-2xl border border-white/20 
+    shadow-lg shadow-black/40">
+  
+  {/* Virtual Experiments (Wide Card) */}
+  <div className="md:col-span-4 rounded-2xl p-8
+    bg-white/10 backdrop-blur-2xl border border-white/30 
+    shadow-lg shadow-black/40 text-white flex flex-col justify-between 
+    hover:scale-105 hover:bg-white/20 hover:shadow-xl transition-all duration-300" >
+    
+    <h3 className="text-xl font-semibold mb-3">Virtual Experiments</h3>
+    <p className="text-white/80">
+       Experience a safe, interactive 3D virtual laboratory where you can conduct, simulate, and study chemical reactions in real time.
+    </p>
+     
+    <button onClick={() => navigate(user ? '/lab' : '/auth')} className="mt-6 w-32 mx-auto bg-white/20 text-white px-4 py-2 rounded-full font-medium hover:bg-white/30">
+      Start Lab →
+    </button>
+    
 
-        <button className="mt-6 bg-white/20 text-white px-4 py-2 rounded-full font-medium hover:bg-white/30">
-          Start Lab →
-        </button>
+    <img
+      src={experiment}
+      alt="Lab Flask"
+      className="w-32 mx-auto mt-6 opacity-90"
+    />
+  </div>
 
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/2927/2927347.png"
-          alt="Lab Flask"
-          className="w-24 mx-auto mt-6 opacity-90"
-        />
-      </div>
+  {/* High-Impact Visuals */}
+  <div className="md:col-span-2 rounded-2xl p-8 
+    bg-white/10 backdrop-blur-2xl border border-white/20 
+    shadow-lg shadow-black/40 text-white flex flex-col justify-between 
+    hover:scale-105 hover:bg-white/20 hover:shadow-xl transition-all duration-300">
+    
+    <h3 className="text-2xl font-semibold mb-3">High-Impact Visuals</h3>
+    <p className="text-white/80">
+      Our visual framework is optimized for attention retention and engagement efficiency.
+    </p>
 
-      {/* Instant Simulations (Tall Card) */}
-      <div className="md:col-span-2 rounded-2xl p-8 
-        bg-gradient-to-br from-white/20 to-white/5 
-        backdrop-blur-xl border border-white/30 
-        shadow-2xl shadow-black/30 
-        text-white flex flex-col justify-between hover:scale-105 transition-transform duration-300">
-        
-        <h3 className="text-2xl font-semibold mb-3">Instant Simulations</h3>
-        <p className="text-white/80">
-          Run experiments instantly with pre-built templates and auto-results.
-        </p>
+    <button onClick={() => navigate(user ? '/lab' : '/auth')} className="mt-6 bg-white/20 mx-auto w-40 text-white px-4 py-2 rounded-full font-medium hover:bg-white/30">
+      Try Now →
+    </button>
 
-        <button className="mt-6 bg-white/20 text-white px-4 py-2 rounded-full font-medium hover:bg-white/30">
-          Try Now →
-        </button>
+    <img
+      src={visual}
+      alt="Atom"
+      className="w-20 mx-auto mt-6 opacity-90"
+    />
+  </div>
 
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/1048/1048877.png"
-          alt="Atom"
-          className="w-20 mx-auto mt-6 opacity-90"
-        />
-      </div>
+  {/* Task Saving */}
+  <div className="md:col-span-2 rounded-2xl p-8 
+    bg-white/10 backdrop-blur-2xl border border-white/20 
+    shadow-lg shadow-black/40 text-white flex flex-col items-center 
+    hover:scale-105 hover:bg-white/20 hover:shadow-xl transition-all duration-300">
+    
+    <h3 className="text-2xl font-semibold mb-3">Task Saving</h3>
+    <p className="text-white/80 text-center">
+      The Task Saving feature securely stores and preserves your task data, across sessions.
+    </p>
 
-      {/* Compound Library */}
-      <div className="md:col-span-2 rounded-2xl p-8 
-        bg-gradient-to-br from-white/20 to-white/5 
-        backdrop-blur-xl border border-white/30 
-        shadow-2xl shadow-black/30 
-        text-white flex flex-col items-center hover:scale-105 transition-transform duration-300">
-        
-        <h3 className="text-2xl font-semibold mb-3">Compound Library</h3>
-        <p className="text-white/80 text-center">
-          Explore thousands of molecules, reactions, and chemical properties.
-        </p>
+    <img
+      src={save}
+      alt="Molecule"
+      className="w-20 mt-6 opacity-90"
+    />
+  </div>
 
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/3142/3142315.png"
-          alt="Molecule"
-          className="w-20 mt-6 opacity-90"
-        />
-      </div>
+  {/* Score board */}
+  <div className="md:col-span-2 rounded-2xl p-8 
+    bg-white/10 backdrop-blur-2xl border border-white/20 
+    shadow-lg shadow-black/40 text-white flex flex-col items-center 
+    hover:scale-105 hover:bg-white/20 hover:shadow-xl transition-all duration-300">
+    
+    <h3 className="text-2xl font-semibold mb-3">Score board</h3>
+    <p className="text-white/80 text-center">
+      The Score Board feature dynamically tracks, updates, and displays user performance or points in real time.
+    </p>
 
-      {/* Progress Tracking */}
-      <div className="md:col-span-2 rounded-2xl p-8 
-        bg-gradient-to-br from-white/20 to-white/5 
-        backdrop-blur-xl border border-white/30 
-        shadow-2xl shadow-black/30 
-        text-white flex flex-col items-center hover:scale-105 transition-transform duration-300">
-        
-        <h3 className="text-2xl font-semibold mb-3">Progress Tracking</h3>
-        <p className="text-white/80 text-center">
-          Monitor experiment history and track your chemistry learning journey.
-        </p>
+    <div className="flex justify-center mt-6">
+      <img
+        src={score}
+        alt="Scoreboard"
+        className="w-16 h-16 opacity-90"
+      />
+    </div>
+  </div>
 
-        {/* Tracking Bars */}
-        <div className="flex items-end justify-center gap-2 mt-6 w-full h-24">
-          <div className="w-2 bg-white rounded-full h-14"></div>
-          <div className="w-2 bg-white/60 rounded-full h-24"></div>
-          <div className="w-2 bg-white rounded-full h-16"></div>
-          <div className="w-2 bg-white/60 rounded-full h-20"></div>
-          <div className="w-2 bg-white rounded-full h-10"></div>
-          <div className="w-2 bg-white/60 rounded-full h-24"></div>
-          <div className="w-2 bg-white rounded-full h-10"></div>
-          <div className="w-2 bg-white/60 rounded-full h-20"></div>
-          <div className="w-2 bg-white rounded-full h-14"></div>
-          <div className="w-2 bg-white rounded-full h-12"></div>
-          <div className="w-2 bg-white/60 rounded-full h-24"></div>
-          <div className="w-2 bg-white rounded-full h-8"></div>
-        </div>
-      </div>
+  {/* Progress Tracking */}
+  <div className="md:col-span-2 rounded-2xl p-8 
+    bg-white/10 backdrop-blur-2xl border border-white/20 
+    shadow-lg shadow-black/40 text-white flex flex-col items-center 
+    hover:scale-105 hover:bg-white/20 hover:shadow-xl transition-all duration-300">
+    
+    <h3 className="text-2xl font-semibold mb-3">Progress Tracking</h3>
+    <p className="text-white/80 text-center">
+      Track and manage your learning journey with full autonomy and real-time insights.
+    </p>
 
-      {/* Global Access */}
-      <div className="md:col-span-2 rounded-2xl p-8 
-        bg-gradient-to-br from-white/20 to-white/5 
-        backdrop-blur-xl border border-white/30 
-        shadow-2xl shadow-black/30 
-        text-white flex flex-col items-center hover:scale-105 transition-transform duration-300">
-        
-        <h3 className="text-2xl font-semibold mb-3">Global Access</h3>
-        <p className="text-white/80 text-center">
-          Learn anytime, anywhere with worldwide access to the virtual lab.
-        </p>
-
-        {/* Globe Below */}
-        <div className="flex justify-center mt-6">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/44/44948.png"
-            alt="Worldwide Access"
-            className="w-16 h-16 opacity-90"
-          />
-        </div>
-      </div>
+    <div className="flex items-end justify-center gap-2 mt-6 w-full h-24">
+      <div className="w-2 bg-white rounded-full h-14"></div>
+      <div className="w-2 bg-white/60 rounded-full h-24"></div>
+      <div className="w-2 bg-white rounded-full h-16"></div>
+      <div className="w-2 bg-white/60 rounded-full h-20"></div>
+      <div className="w-2 bg-white rounded-full h-10"></div>
+      <div className="w-2 bg-white/60 rounded-full h-24"></div>
+      <div className="w-2 bg-white rounded-full h-10"></div>
+      <div className="w-2 bg-white/60 rounded-full h-20"></div>
+      <div className="w-2 bg-white rounded-full h-14"></div>
+      <div className="w-2 bg-white rounded-full h-12"></div>
+      <div className="w-2 bg-white/60 rounded-full h-24"></div>
+      <div className="w-2 bg-white rounded-full h-8"></div>
+    </div>
+  </div>
     </div>
   </div>
 </section>
 
-
-
-     
-
-
       {/* What We Do Section */}
-      <section className="container mx-auto px-4 py-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl shadow-lg max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold mb-8 text-center">What We Do</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <GlassCard
-            title="Interactive Experiments"
-            description="Hands-on virtual labs with real-time feedback and error analysis."
-            icon={<FlaskConical className="h-6 w-6 text-yellow-400" />}
-          />
-          <GlassCard
-            title="Detailed Lessons"
-            description="Step-by-step tutorials explaining core chemistry concepts clearly."
-            icon={<BookOpen className="h-6 w-6 text-yellow-400" />}
-          />
-          <GlassCard
-            title="Performance Tracking"
-            description="Monitor learning progress and get personalized recommendations."
-            icon={<Users className="h-6 w-6 text-yellow-400" />}
-          />
+<section className="container mx-auto px-4 py-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl shadow-lg max-w-4xl mx-auto">
+  <h2 className="text-3xl font-bold mb-8 text-center">What We Do</h2>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <GlassCard
+      title="Interactive Experiments"
+      description="Engage in immersive, hands-on virtual labs that simulate real-world reactions with instant visual feedback and accuracy insights."
+      icon={<FlaskConical className="h-6 w-6 text-yellow-400" />}
+    />
+    <GlassCard
+      title="Detailed Lessons"
+      description="Explore comprehensive tutorials crafted to simplify complex chemistry concepts through visuals, examples, and guided explanations."
+      icon={<BookOpen className="h-6 w-6 text-yellow-400" />}
+    />
+    <GlassCard
+      title="Performance Tracking"
+      description="Stay motivated with real-time analytics that monitor your learning curve, highlight strengths, and suggest targeted improvements."
+      icon={<Users className="h-6 w-6 text-yellow-400" />}
+    />
+    
+  </div>
+</section>
+
+
+{/* Detailed MVP Features Section */}
+<div className="container mx-auto px-6 py-16">
+  <motion.div
+    className="rounded-2xl p-10 shadow-xl bg-gray-50"
+    initial={{ opacity: 0, y: 50 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, ease: "easeOut" }}
+    viewport={{ once: true }}
+  >
+    <section className="grid md:grid-cols-2 gap-10 items-center">
+      
+      {/* Left Side - Image */}
+      <motion.div
+        className="relative"
+        initial={{ opacity: 0, x: -50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.7, delay: 0.2 }}
+        viewport={{ once: true }}
+      >
+        <img
+          src={image}
+          alt="Virtual Chemistry Lab"
+          className="rounded-2xl shadow-lg w-full object-cover"
+        />
+        <motion.div
+          className="absolute bottom-4 left-4 bg-white px-4 py-2 rounded-full shadow flex items-center gap-2"
+          initial={{ scale: 0 }}
+          whileInView={{ scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex -space-x-2">
+            <img src="https://randomuser.me/api/portraits/women/65.jpg" className="w-8 h-8 rounded-full border" alt="" />
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" className="w-8 h-8 rounded-full border" alt="" />
+            <img src="https://randomuser.me/api/portraits/women/44.jpg" className="w-8 h-8 rounded-full border" alt="" />
+          </div>
+          <span className="text-sm font-medium text-gray-700">Trusted by 350+ learners</span>
+        </motion.div>
+      </motion.div>
+
+      {/* Right Side - Content */}
+      <motion.div
+        className="text-center md:text-left"
+        initial={{ opacity: 0, x: 50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.7, delay: 0.3 }}
+        viewport={{ once: true }}
+      >
+        <h2 className="text-4xl font-bold mb-4">
+          Explore the Future of Learning with Our <span className="text-purple-500">Virtual Chemistry Lab</span>
+        </h2>
+
+        <p className="text-gray-600 mb-6 max-w-lg">
+          Discover how students and educators can <strong>revolutionize chemistry learning</strong> with our immersive Virtual Chemistry Lab! Say goodbye to outdated methods and unsafe experiments, and embrace a safer, interactive, and data-driven approach.
+        </p>
+
+        <h3 className="text-2xl font-semibold mb-4">Key Features</h3>
+        <div className="grid md:grid-cols-1 gap-4 mb-8">
+          <motion.div
+            className="bg-white rounded-xl p-4 shadow text-left"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-gray-700">⚗️ Simulate 50+ Chemistry Experiments Safely: Conduct experiments virtually without any risk.</p>
+          </motion.div>
+
+          <motion.div
+            className="bg-white rounded-xl p-4 shadow text-left"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-gray-700">🧪 Interactive 3D Molecules and Reactions: Visualize molecules and chemical reactions in real-time.</p>
+          </motion.div>
+
+          <motion.div
+            className="bg-white rounded-xl p-4 shadow text-left"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-gray-700">📊 Real-Time Lab Data Tracking: Monitor student progress and experiment results instantly.</p>
+          </motion.div>
+
+          <motion.div
+            className="bg-white rounded-xl p-4 shadow text-left"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-gray-700">🌐 Unlimited Access: Support for both students and teachers with flexible access.</p>
+          </motion.div>
+
+          <motion.div
+            className="bg-white rounded-xl p-4 shadow text-left"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-gray-700">📄 Detailed Reports & Analytics: Generate comprehensive experiment summaries to enhance learning outcomes.</p>
+          </motion.div>
         </div>
-      </section>
+
+        <h3 className="text-2xl font-semibold mb-4">Transforming Education with Virtual Labs</h3>
+        <p className="text-gray-600 mb-4 max-w-lg">
+          Our Virtual Chemistry Lab leverages <strong>advanced simulation technology</strong> to provide realistic, hands-on learning experiences. Students can explore complex chemical reactions, practice lab techniques, and understand concepts deeply—without physical constraints or safety risks.
+        </p>
+
+        <p className="text-gray-600 mb-6 max-w-lg">
+          This platform empowers classrooms worldwide by encouraging:
+        </p>
+
+        <ul className="list-disc list-inside text-gray-700 mb-6 max-w-lg">
+          <li>Curiosity & Critical Thinking</li>
+          <li>Problem-Solving Skills</li>
+          <li>Cost Reduction & Resource Optimization</li>
+        </ul>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-full font-medium transition"
+          onClick={() => navigate(user ? '/lab' : '/auth')}
+        >
+          Experience Virtual Labs →
+        </motion.button>
+      </motion.div>
+    </section>
+  </motion.div>
+</div>
+
+
+
+
 
       {/* Footer */}
       <footer className="border-t border-gray-200 py-8 mt-12 text-center text-gray-500">
-        © 2024 Virtual Science Lab. Empowering the next generation of chemists.
+        © 2025 REACTRON. Empowering the next generation of chemists.
       </footer>
     </div>
   );

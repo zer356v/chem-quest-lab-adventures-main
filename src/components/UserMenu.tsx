@@ -62,10 +62,7 @@ const UserMenu = () => {
           </div>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate('/lessons')}>
-          <BookOpen className="mr-2 h-4 w-4" />
-          My Lessons
-        </DropdownMenuItem>
+        
         <DropdownMenuItem onClick={() => navigate('/periodic-table')}>
           <Atom className="mr-2 h-4 w-4" />
           Periodic Table
@@ -74,10 +71,7 @@ const UserMenu = () => {
           <User className="mr-2 h-4 w-4" />
           Profile
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Settings className="mr-2 h-4 w-4" />
-          Settings
-        </DropdownMenuItem>
+        
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut} disabled={loading}>
           <LogOut className="mr-2 h-4 w-4" />

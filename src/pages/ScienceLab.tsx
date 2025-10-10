@@ -29,6 +29,8 @@ import useChemicalReactionEngine from '@/components/ChemicalReactionEngine';
 import useExperimentScoring, { ExperimentScorePanel } from '@/components/ExperimentScoring';
 import EducationalTooltips from '@/components/EducationalTooltips';
 import SafetyWarnings from '@/components/SafetyWarnings';
+import logo from '../assets/Reactron_Logo.png'
+import { Navigate, useNavigate } from 'react-router-dom';
 
 interface PlacedEquipment {
   id: string;
@@ -49,6 +51,7 @@ const ScienceLab = () => {
 
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(false);
+  const navigate = useNavigate();
 
   // Reaction engine and scoring
   const reactionEngine = useChemicalReactionEngine();
@@ -276,10 +279,9 @@ const ScienceLab = () => {
         <header className="flex items-center justify-between px-6 py-3 bg-card border-b shadow-sm">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
-              <Beaker className="h-6 w-6 text-primary" />
+              
               <div>
-                <h1 className="text-base font-bold">Virtual Chemistry Lab</h1>
-                <p className="text-xs text-muted-foreground">Professional Workspace</p>
+                <button onClick={() => navigate ('/')} ><img className="w-44 h-12 items-center justify-center -mb-2" src={logo}/> </button>
               </div>
             </div>
 
