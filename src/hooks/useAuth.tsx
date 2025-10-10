@@ -26,16 +26,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   useEffect(()=>{
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, (user:any) => {
       if (user) {
         setUser(user);
         setLoading(false);
         console.log("User logged in");
+        console.log(user.uid);
       } else {
         console.log("No user is logged in");
       }
 });
-  },[])
+  },[user])
 
   const signUp = async (email: string, password: string, name: string,) => {
     

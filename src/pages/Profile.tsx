@@ -26,8 +26,11 @@ import {
   Globe,
   Monitor,
   ArrowLeft,
+  History
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from '@/hooks/useAuth';
 
 // Editable Field Component
 const EditableField = ({ label, value, field, multiline = false, icon, formData, setFormData, editingField, setEditingField }) => {
@@ -89,7 +92,7 @@ const EditableField = ({ label, value, field, multiline = false, icon, formData,
               className="opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <Edit className="h-4 w-4" />
-            </Button>
+            </Button>  
           </div>
         )}
       </CardContent>
@@ -145,20 +148,18 @@ export default function ChemistryLabProfilePage() {
   const auth = getAuth();
   const currentUser = auth.currentUser;
   const navigate = useNavigate();
-
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     displayName: "",
-    bio: "",
     photoURL: "",
-    institution: "",
-    location: "",
-    website: "",
   });
 
   const [editingField, setEditingField] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("Profile");
-
+  const [activeTab, setActiveTab] = useState<
+    "Profile" | "Settings" | "History"
+  >("Profile");
+ 
   const [settings, setSettings] = useState({
     performanceMode: "balanced",
     enableGPUBoost: true,
@@ -166,6 +167,9 @@ export default function ChemistryLabProfilePage() {
   });
 
   const [gpuType, setGpuType] = useState("unknown");
+  
+  const [score, setScore] = useState(0)
+  const [level, setLevel] = useState(0);
 
   // GPU Detection
   useEffect(() => {
@@ -195,15 +199,24 @@ export default function ChemistryLabProfilePage() {
     if (currentUser) {
       setFormData({
         displayName: currentUser.displayName || "",
-        bio: "",
         photoURL: currentUser.photoURL || "",
-        institution: "",
-        location: "",
-        website: "",
       });
       setLoading(false);
     }
   }, [currentUser]);
+  
+   useEffect(()=>{
+      const getScore = async ()=>{
+        const response = await axios.get(`http://localhost:3000/api/add-experiment/${user.uid}`);
+        console.log(response.data);
+        const userExperimentArray = response.data;
+        const {score} = userExperimentArray[userExperimentArray.length - 1];
+        setScore(score);
+        const newLevel = Math.floor(score / 100);
+        setLevel(newLevel);
+      }
+      getScore();
+   },[])
 
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
@@ -219,13 +232,12 @@ export default function ChemistryLabProfilePage() {
     navigate("/lab");
   };
 
-  const level = 4;
-  const nextLevel = level + 1;
-  const progress = 72;
-  const experimentsCompleted = 23;
-  const labHours = 47;
-  const badges = 8;
 
+  const progress = score % 100;
+  console.log("Current Score:", score, "Level:", level, "Progress to next level:", progress);
+  const experimentsCompleted = 0;
+  const labHours = 0;
+  const badges = 0;
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -247,10 +259,11 @@ export default function ChemistryLabProfilePage() {
         
         {/* Tab Navigation */}
         <div className="flex gap-2">
-          {[
+          {([
             { name: "Profile", icon: <User className="h-4 w-4" /> },
             { name: "Settings", icon: <Settings className="h-4 w-4" /> },
-          ].map(({ name, icon }) => (
+            { name: "History", icon: <History className="h-4 w-4" /> },
+          ] as { name: "Profile" | "Settings" | "History"; icon: React.ReactNode }[]).map(({ name, icon }) => (
             <Button
               key={name}
               variant={activeTab === name ? "default" : "outline"}
@@ -317,7 +330,6 @@ export default function ChemistryLabProfilePage() {
                           onChange={handleAvatarChange}
                         />
                       </label>
-                      <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white"></div>
                     </div>
                     
                     <div>
@@ -335,9 +347,6 @@ export default function ChemistryLabProfilePage() {
                         <span className="px-4 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
                           {badges} Badges
                         </span>
-                        <span className="px-4 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                          Online
-                        </span>
                       </div>
                     </div>
                   </div>
@@ -346,7 +355,7 @@ export default function ChemistryLabProfilePage() {
                   <div className="mt-6 pt-6 border-t">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium text-gray-700">
-                        Progress to Level {nextLevel}
+                        Progress to Level {level+1}
                       </span>
                       <span className="text-sm font-bold text-indigo-600">{progress}%</span>
                     </div>
@@ -387,7 +396,7 @@ export default function ChemistryLabProfilePage() {
                 />
               </div>
 
-              {/* Personal Information */}
+              {/* Personal Information - Simplified */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -396,59 +405,12 @@ export default function ChemistryLabProfilePage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <EditableField
                       label="Display Name"
                       value={formData.displayName}
                       field="displayName"
                       icon={<User className="h-4 w-4" />}
-                      formData={formData}
-                      setFormData={setFormData}
-                      editingField={editingField}
-                      setEditingField={setEditingField}
-                    />
-                    
-                    <EditableField
-                      label="Institution"
-                      value={formData.institution}
-                      field="institution"
-                      icon={<BookOpen className="h-4 w-4" />}
-                      formData={formData}
-                      setFormData={setFormData}
-                      editingField={editingField}
-                      setEditingField={setEditingField}
-                    />
-                    
-                    <EditableField
-                      label="Location"
-                      value={formData.location}
-                      field="location"
-                      icon={<MapPin className="h-4 w-4" />}
-                      formData={formData}
-                      setFormData={setFormData}
-                      editingField={editingField}
-                      setEditingField={setEditingField}
-                    />
-                    
-                    <EditableField
-                      label="Website"
-                      value={formData.website}
-                      field="website"
-                      icon={<Globe className="h-4 w-4" />}
-                      formData={formData}
-                      setFormData={setFormData}
-                      editingField={editingField}
-                      setEditingField={setEditingField}
-                    />
-                  </div>
-                  
-                  <div className="mt-4">
-                    <EditableField
-                      label="Bio"
-                      value={formData.bio}
-                      field="bio"
-                      multiline={true}
-                      icon={<Edit className="h-4 w-4" />}
                       formData={formData}
                       setFormData={setFormData}
                       editingField={editingField}
@@ -553,81 +515,14 @@ export default function ChemistryLabProfilePage() {
                     </CardContent>
                   </Card>
                 </div>
-
-                <div className="pt-4 border-t">
-                  <Button className="w-full">
+                <div className="pt-4">
+                  <button className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
                     Apply Changes
-                  </Button>
+                  </button>
                 </div>
               </CardContent>
             </Card>
           )}
-        </div>
-
-        {/* Right Sidebar */}
-        <div className="w-72 space-y-4">
-          {/* Chemistry Specializations */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <FlaskConical className="h-4 w-4 text-indigo-600" />
-                Chemistry Specializations
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  'Organic Chemistry',
-                  'Analytical Chemistry', 
-                  'Physical Chemistry',
-                  'Biochemistry',
-                  'Inorganic Chemistry',
-                  'Environmental Chemistry'
-                ].map((spec) => (
-                  <span
-                    key={spec}
-                    className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-medium"
-                  >
-                    {spec}
-                  </span>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recent Achievements */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Trophy className="h-4 w-4 text-indigo-600" />
-                Recent Achievements
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <AchievementBadge
-                  title="First Experiment"
-                  description="Completed your first lab experiment"
-                  earned={true}
-                />
-                <AchievementBadge
-                  title="Safety Expert"
-                  description="Perfect safety record for 30 days"
-                  earned={true}
-                />
-                <AchievementBadge
-                  title="Speed Chemist"
-                  description="Complete 5 experiments in one day"
-                  earned={false}
-                />
-                <AchievementBadge
-                  title="Lab Master"
-                  description="Reach Level 10 in the lab"
-                  earned={false}
-                />
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>

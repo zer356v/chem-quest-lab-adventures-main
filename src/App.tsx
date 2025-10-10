@@ -6,13 +6,23 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import ScienceLab from "./pages/ScienceLab";
-import NotFound from "./pages/NotFound";
 import MyLessons from "./pages/MyLessons";
-import PeriodicTable from "./pages/PeriodicTable";
 import ProfilePage from "./pages/Profile";
+import { lazy } from "react";
+
+
+const Index= lazy(() => import('./pages/Index'));
+const Auth= lazy(() => import('./pages/Auth'));
+const ScienceLab= lazy(() => import('./pages/ScienceLab'));
+const NotFound= lazy(() => import('./pages/NotFound'));
+const PeriodicTable= lazy(() => import('./pages/PeriodicTable'));
+
+
+export const preloadIndex= () => import('./pages/Index');
+export const preloadAuth= () => import('./pages/Auth');
+export const preloadScienceLab= () => import('./pages/ScienceLab');
+export const preloadNotFound= () => import('./pages/NotFound');
+export const preloadPeriodicTable= () => import('./pages/PeriodicTable');
 
 const queryClient = new QueryClient();
 
