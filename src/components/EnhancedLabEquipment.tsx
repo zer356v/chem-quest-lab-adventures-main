@@ -1,24 +1,16 @@
-
-import React, { useRef, useState, useEffect } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
-import { Text, Html } from '@react-three/drei';
-import { useDragDrop } from './DragDropProvider';
-import ChemicalReaction from './ChemicalReaction';
+import React, { useState, useEffect } from 'react';
 import { 
   BubblingEffect, 
   SteamEffect, 
   CrystallizationEffect, 
-  HeatGlowEffect, 
   ColorTransitionEffect 
 } from './EnhancedChemicalEffects';
-import { RealisticBeaker, RealisticFlask, RealisticBurner } from './AdvancedEquipmentModels';
+import { RealisticBeaker, RealisticFlask, RealisticBurner, BuretteWithStand } from './AdvancedEquipmentModels';
 import { 
   TemperatureVisualization, 
-  PHIndicator, 
-  ReactionProgressBar, 
+  PHIndicator,
   EquipmentStateIndicator 
 } from './AdvancedChemistryVisuals';
-import * as THREE from 'three';
 
 interface Equipment {
   type: string;
@@ -31,6 +23,9 @@ interface Equipment {
   mixingLevel: number;
   reactionProgress: number;
   reactionType: string | null;
+  volume?: number;
+  concentration?: number;
+  isDispensing?: boolean;
 }
 
 interface EnhancedLabEquipmentProps {
@@ -41,213 +36,13 @@ interface EnhancedLabEquipmentProps {
   position: [number, number, number];
   equipmentType: string;
   equipmentId: string;
-  onChemicalAdd?: (equipmentId: string, chemical: string) => void;
-  equipmentContents?: string[];
+  onChemicalAdd?: (chemical: any, volume: number) => void; // Parent binds equipmentId per-instance
+  equipmentContents?: string[]; // Keep for backward compatibility
+  // New props for volume system:
+  chemicalObjects?: Array<{name: string; volume: number; color: string}>;
+  totalVolume?: number;
+  onVolumeChange?: (newVolume: number) => void;
 }
-
-const EnhancedBeaker: React.FC<{ 
-  equipment: Equipment, 
-  onClick: () => void,
-  onDrop: (chemical: string) => void,
-  position: [number, number, number]
-}> = ({ equipment, onClick, onDrop, position }) => {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const [hovered, setHovered] = useState(false);
-  const [showReaction, setShowReaction] = useState(false);
-  const { setDraggedItem, setIsDragging } = useDragDrop();
-
-  const getLiquidColor = () => {
-    if (!equipment.contents || equipment.contents.length === 0) return '#87CEEB';
-    if (equipment.contents.includes('Hydrochloric Acid') || equipment.contents.includes('HCl')) return '#FFD700';
-    if (equipment.contents.includes('Sodium Hydroxide') || equipment.contents.includes('NaOH')) return '#87CEEB';
-    if (equipment.contents.includes('Copper Sulfate') || equipment.contents.includes('CuSO4')) return '#4169E1';
-    if (equipment.contents.includes('Sulfuric Acid') || equipment.contents.includes('H2SO4')) return '#FFFF99';
-    if (equipment.contents.includes('Iron Oxide') || equipment.contents.includes('Fe2O3')) return '#CD853F';
-    return '#87CEEB';
-  };
-
-  const checkForReaction = () => {
-    if (equipment.contents && equipment.contents.length >= 2) {
-      const hasAcid = equipment.contents.some(c => 
-        c.includes('Hydrochloric Acid') || 
-        c.includes('Sulfuric Acid') || 
-        c.includes('HCl') || 
-        c.includes('H2SO4')
-      );
-      const hasBase = equipment.contents.some(c => 
-        c.includes('Sodium Hydroxide') || 
-        c.includes('NaOH')
-      );
-      
-      if (hasAcid && hasBase) {
-        setShowReaction(true);
-        setTimeout(() => setShowReaction(false), 5000);
-      }
-    }
-  };
-
-  useEffect(() => {
-    checkForReaction();
-  }, [equipment.contents]);
-
-  useFrame((state) => {
-    if (meshRef.current && hovered) {
-      meshRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 2) * 0.05;
-    }
-  });
-
-  const liquidHeight = equipment.contents ? Math.min(equipment.contents.length * 0.3, 1.2) : 0;
-
-  return (
-    <group position={position}>
-      {/* Main beaker */}
-      <mesh
-        ref={meshRef}
-        onClick={onClick}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
-        castShadow
-        receiveShadow
-      >
-        <cylinderGeometry args={[0.5, 0.3, 1.5, 16]} />
-        <meshStandardMaterial 
-          color={hovered ? "#60A5FA" : "#3B82F6"} 
-          transparent 
-          opacity={0.6}
-        />
-      </mesh>
-
-      {/* Liquid inside */}
-      {liquidHeight > 0 && (
-        <mesh position={[0, -0.75 + liquidHeight/2, 0]}>
-          <cylinderGeometry args={[0.45, 0.28, liquidHeight, 16]} />
-          <meshStandardMaterial 
-            color={getLiquidColor()}
-            transparent 
-            opacity={0.8}
-          />
-        </mesh>
-      )}
-
-      {/* Equipment label */}
-      <Text
-        position={[0, 1.2, 0]}
-        fontSize={0.12}
-        color="#FFFFFF"
-        anchorX="center"
-        anchorY="middle"
-      >
-        {equipment.type} • {equipment.contents?.length || 0} chemicals
-      </Text>
-
-      {/* Contents list */}
-      {equipment.contents && equipment.contents.length > 0 && (
-        <Html position={[0, -1.5, 0]} center>
-          <div className="bg-black/80 text-white p-2 rounded text-xs max-w-40">
-            <div className="font-medium mb-1">Contents:</div>
-            {equipment.contents.map((chemical, index) => (
-              <div key={index} className="text-xs">• {chemical}</div>
-            ))}
-          </div>
-        </Html>
-      )}
-
-      {/* Chemical reaction effect */}
-      {showReaction && (
-        <ChemicalReaction
-          position={[0, 0.5, 0]}
-          reactionType="acid-base"
-          intensity={0.8}
-          onComplete={() => setShowReaction(false)}
-        />
-      )}
-    </group>
-  );
-};
-
-const EnhancedFlask: React.FC<{ 
-  equipment: Equipment, 
-  onClick: () => void,
-  position: [number, number, number]
-}> = ({ equipment, onClick, position }) => {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const [hovered, setHovered] = useState(false);
-
-  const liquidHeight = equipment.contents ? Math.min(equipment.contents.length * 0.2, 0.6) : 0;
-
-  const getLiquidColor = () => {
-    if (!equipment.contents || equipment.contents.length === 0) return '#87CEEB';
-    if (equipment.contents.includes('Hydrochloric Acid') || equipment.contents.includes('HCl')) return '#FFD700';
-    if (equipment.contents.includes('Sodium Hydroxide') || equipment.contents.includes('NaOH')) return '#87CEEB';
-    if (equipment.contents.includes('Copper Sulfate') || equipment.contents.includes('CuSO4')) return '#4169E1';
-    return '#87CEEB';
-  };
-
-  return (
-    <group position={position}>
-      {/* Flask base */}
-      <mesh
-        ref={meshRef}
-        onClick={onClick}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
-        castShadow
-        receiveShadow
-      >
-        <sphereGeometry args={[0.4, 16, 16]} />
-        <meshStandardMaterial 
-          color={hovered ? "#F59E0B" : "#D97706"} 
-          transparent 
-          opacity={0.8}
-        />
-      </mesh>
-      
-      {/* Liquid inside flask */}
-      {liquidHeight > 0 && (
-        <mesh position={[0, -0.4 + liquidHeight/2, 0]}>
-          <sphereGeometry args={[0.35, 16, 16]} />
-          <meshStandardMaterial 
-            color={getLiquidColor()}
-            transparent 
-            opacity={0.8}
-          />
-        </mesh>
-      )}
-      
-      {/* Flask neck */}
-      <mesh position={[0, 0.5, 0]}>
-        <cylinderGeometry args={[0.15, 0.15, 0.8, 16]} />
-        <meshStandardMaterial 
-          color={hovered ? "#F59E0B" : "#D97706"} 
-          transparent 
-          opacity={0.8}
-        />
-      </mesh>
-
-      <Text
-        position={[0, 1.2, 0]}
-        fontSize={0.12}
-        color="#FFFFFF"
-        anchorX="center"
-        anchorY="middle"
-      >
-        {equipment.type} • {equipment.contents?.length || 0} chemicals
-      </Text>
-
-      {/* Contents list for flask */}
-      {equipment.contents && equipment.contents.length > 0 && (
-        <Html position={[0, -1.5, 0]} center>
-          <div className="bg-black/80 text-white p-2 rounded text-xs max-w-40">
-            <div className="font-medium mb-1">Contents:</div>
-            {equipment.contents.map((chemical, index) => (
-              <div key={index} className="text-xs">• {chemical}</div>
-            ))}
-          </div>
-        </Html>
-      )}
-    </group>
-  );
-};
 
 export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({ 
   selectedEquipment, 
@@ -258,7 +53,10 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
   equipmentType,
   equipmentId,
   onChemicalAdd,
-  equipmentContents = []
+  equipmentContents = [],
+  chemicalObjects = [],
+  totalVolume = 0,
+  onVolumeChange
 }) => {
   const [equipment, setEquipment] = useState<Equipment>({
     type: equipmentType,
@@ -270,7 +68,10 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
     pH: 7.0,
     mixingLevel: 0.0,
     reactionProgress: 0.0,
-    reactionType: null
+    reactionType: null,
+    volume: equipmentType.includes('burette') ? 50 : undefined,
+    concentration: 0.1,
+    isDispensing: false
   });
 
   const [activeEffects, setActiveEffects] = useState<{
@@ -287,25 +88,57 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
     colorTransition: false
   });
 
+  const [currentReaction, setCurrentReaction] = useState<any | null>(null);
+
+  // Helper function to get default colors for backward compatibility
+  const getDefaultChemicalColor = (chemicalName: string): string => {
+    const colorMap: { [key: string]: string } = {
+      "Hydrochloric Acid": "#FFD700",
+      "HCl": "#FFD700",
+      "Sodium Hydroxide": "#87CEEB",
+      "NaOH": "#87CEEB",
+      "Copper Sulfate": "#4169E1",
+      "CuSO4": "#4169E1",
+      "Sulfuric Acid": "#FFFF99",
+      "H2SO4": "#FFFF99",
+      "Iron Oxide": "#CD853F",
+      "Fe2O3": "#CD853F",
+      "Potassium Permanganate": "#800080",
+      "KMnO4": "#800080",
+    };
+    return colorMap[chemicalName] || "#87CEEB";
+  };
+
+  // Use chemicalObjects if available, otherwise convert equipmentContents to objects
+  const chemicals = chemicalObjects.length > 0 
+    ? chemicalObjects 
+    : equipmentContents.map(name => ({
+        name,
+        volume: 5, // Default volume for backward compatibility
+        color: getDefaultChemicalColor(name)
+      }));
+
+  const contentNames = chemicals.map(c => c.name);
+
   // Update equipment contents and calculate properties
   useEffect(() => {
     setEquipment(prev => {
       const newEquipment = {
         ...prev,
-        contents: equipmentContents
+        contents: contentNames
       };
 
       // Calculate pH based on contents
-      newEquipment.pH = calculatePH(equipmentContents);
+      newEquipment.pH = calculatePH(contentNames);
       
-      // Determine if heating should occur
-      newEquipment.isHeated = shouldHeat(equipmentContents);
+      // Determine if heating should occur (burettes typically don't get heated)
+      newEquipment.isHeated = shouldHeat(contentNames) && !equipmentType.includes('burette');
       
       // Calculate temperature based on reactions and heating
-      newEquipment.temperature = calculateTemperature(equipmentContents, newEquipment.isHeated);
+      newEquipment.temperature = calculateTemperature(contentNames, newEquipment.isHeated);
       
       // Determine reaction type and progress
-      const reactionInfo = determineReaction(equipmentContents);
+      const reactionInfo = determineReaction(contentNames);
       newEquipment.reactionType = reactionInfo.type;
       newEquipment.reactionProgress = reactionInfo.progress;
 
@@ -313,8 +146,49 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
     });
 
     // Trigger visual effects based on contents and reactions
-    updateVisualEffects(equipmentContents);
-  }, [equipmentContents]);
+    updateVisualEffects(contentNames);
+  }, [equipmentContents, chemicalObjects, equipmentType]);
+
+  // Listen to global reactions and enable visual effects when a reaction targets this equipment
+  useEffect(() => {
+    if (!reactions || reactions.length === 0) return;
+    const myReactions = reactions.filter(r => r.equipmentId === equipmentId);
+    if (myReactions.length === 0) return;
+    const latest = myReactions[myReactions.length - 1];
+    setCurrentReaction(latest);
+
+    const newEffects = {
+      bubbling: !!latest.gasEvolution,
+      steam: latest.type === 'combustion' || (!!latest.heatGenerated && latest.heatGenerated > 50),
+      crystallization: !!latest.precipitateFormed,
+      heatGlow: !!latest.heatGenerated && latest.heatGenerated > 20,
+      colorTransition: !!latest.colorChange
+    };
+
+    setActiveEffects(prev => ({ ...prev, ...newEffects }));
+
+    // determine duration: combustion fast, displacement slower
+    const duration = latest.type === 'single_replacement' || latest.name?.toLowerCase().includes('displacement') ? 30000 : latest.type === 'combustion' ? 8000 : 12000;
+    const t = setTimeout(() => {
+      setActiveEffects({ bubbling: false, steam: false, crystallization: false, heatGlow: false, colorTransition: false });
+      setCurrentReaction(null);
+    }, duration);
+
+    return () => clearTimeout(t);
+  }, [reactions, equipmentId]);
+
+  // Evaporation: decrease totalVolume when heated over time
+  useEffect(() => {
+    if (!equipment.isHeated || !onVolumeChange) return;
+    if ((totalVolume || 0) <= 0) return;
+    const evapRatePerSecond = 0.5; // ml/sec baseline; can scale with temperature
+    const interval = setInterval(() => {
+      // decrease parent total volume
+      onVolumeChange(Math.max(0, (totalVolume || 0) - evapRatePerSecond));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [equipment.isHeated, onVolumeChange, totalVolume]);
 
   const calculatePH = (contents: string[]): number => {
     if (contents.length === 0) return 7.0;
@@ -327,7 +201,9 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
       'Sodium Hydroxide': 13.0,
       'NaOH': 13.0,
       'Copper Sulfate': 4.0,
-      'CuSO4': 4.0
+      'CuSO4': 4.0,
+      'Potassium Permanganate': 2.0,
+      'KMnO4': 2.0
     };
 
     let totalPH = 0;
@@ -374,6 +250,10 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
       return { type: 'Metal Displacement', progress: 0.6 };
     }
     
+    if (contents.includes('Potassium Permanganate')) {
+      return { type: 'Redox Titration', progress: 0.7 };
+    }
+    
     if (contents.length >= 2) {
       return { type: 'Chemical Mixing', progress: 0.4 };
     }
@@ -384,57 +264,111 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
   const updateVisualEffects = (contents: string[]) => {
     setActiveEffects({
       bubbling: contents.includes('Hydrochloric Acid') || contents.includes('Sodium Hydroxide'),
-      steam: equipment.temperature > 80,
+      // Steam only when actively heated (e.g., on a burner) and temp high enough
+      steam: (equipment.isHeated || shouldHeat(contents)) && equipment.temperature > 60,
       crystallization: contents.includes('Copper Sulfate') || contents.includes('Salt'),
-      heatGlow: equipment.temperature > 60,
+      // removed heat glow effect in favor of boiling/steam
+      heatGlow: false,
       colorTransition: contents.length > 1
     });
   };
 
   const handleEquipmentClick = () => {
     setSelectedEquipment(selectedEquipment === equipmentId ? null : equipmentId);
-    console.log(`Selected equipment: ${equipmentId}, Contents:`, equipmentContents);
+    console.log(`Selected equipment: ${equipmentId}, Contents:`, contentNames);
+  };
+
+  // NEW: Enhanced chemical addition handler
+  const handleChemicalAdd = (chemical: any, volume: number) => {
+    console.log(`Adding chemical: ${chemical.name}, Volume: ${volume}ml to ${equipmentId}`);
+    
+    // Update equipment state with new chemical
+    setEquipment(prev => {
+      const prevContents = Array.isArray(prev.contents) ? prev.contents : [];
+      const prevChemObjects = (prev as any).chemicalObjects && Array.isArray((prev as any).chemicalObjects) ? (prev as any).chemicalObjects : [];
+
+      const newContents = [...prevContents, chemical.name];
+      const newChemicalObj = { name: chemical.name, volume: Number(volume || 0), color: chemical.color || '#87CEEB' };
+      const newChemObjects = [...prevChemObjects, newChemicalObj];
+
+      const total = newChemObjects.reduce((s, c) => s + Number(c.volume || 0), 0);
+
+      return {
+        ...prev,
+        contents: newContents,
+        // keep chemicalObjects on local equipment state for consistency with parent
+        chemicalObjects: newChemObjects as any,
+        totalVolume: total,
+      } as any;
+    });
+
+    // Call parent handler to update the chemical objects and total volume
+    if (onChemicalAdd) {
+      onChemicalAdd(chemical, volume);
+    }
   };
 
   const handleChemicalDrop = (chemical: string) => {
     console.log(`Chemical ${chemical} dropped on ${equipmentId}`);
-    if (onChemicalAdd) {
-      onChemicalAdd(equipmentId, chemical);
-    }
+    // This is for backward compatibility - convert to new format
+    const chemicalObj = {
+      name: chemical,
+      color: getDefaultChemicalColor(chemical)
+    };
+    handleChemicalAdd(chemicalObj, 5);
+  };
+
+  const handleBuretteDispense = () => {
+    setEquipment(prev => ({ ...prev, isDispensing: !prev.isDispensing }));
+    console.log(`Burette ${equipmentId} dispensing toggled`);
   };
 
   const isSelected = selectedEquipment === equipmentId;
 
+  // Determine beaker model scale based on equipment type
+  const beakerScale: [number, number, number] = equipmentType.includes('500')
+    ? [0.1, 0.1, 0.1]
+    : equipmentType.includes('250')
+    ? [0.08, 0.08, 0.08]
+    : [0.06, 0.06, 0.06];
+
   return (
     <group position={position}>
-      {/* Render appropriate equipment type with advanced models */}
+      {/* Render appropriate equipment type with enhanced volume system */}
       {equipmentType.includes('beaker') && (
         <RealisticBeaker
           position={[0, 0, 0]}
-          contents={equipment.contents}
+          contents={chemicals} // Pass chemical objects with volume and color
+          totalVolume={totalVolume}
           isSelected={isSelected}
           temperature={equipment.temperature}
           isHeated={equipment.isHeated}
           onClick={handleEquipmentClick}
-          onChemicalAdd={(chemical: string) => onChemicalAdd?.(equipmentId, chemical)}
+          onChemicalAdd={handleChemicalAdd} // Pass the enhanced handler
+          scale={beakerScale}
+          equipmentType={equipmentType}
+          onVolumeChange={onVolumeChange}
         />
       )}
 
       {equipmentType.includes('flask') && (
         <RealisticFlask
           position={[0, 0, 0]}
-          contents={equipment.contents}
+          contents={chemicals}
+          totalVolume={totalVolume}
           isSelected={isSelected}
           temperature={equipment.temperature}
           isHeated={equipment.isHeated}
           onClick={handleEquipmentClick}
+          onVolumeChange={onVolumeChange}
+          onChemicalAdd={handleChemicalAdd}
         />
       )}
 
       {equipmentType.includes('burner') && (
         <RealisticBurner
           position={[0, 0, 0]}
-          contents={equipment.contents}
+          contents={chemicals}
           isSelected={isSelected}
           temperature={equipment.temperature}
           isHeated={equipment.isHeated}
@@ -444,8 +378,20 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
         />
       )}
 
-      {/* Advanced Visual Effects */}
-      {activeEffects.bubbling && (
+      {equipmentType.includes('burette') && (
+        <BuretteWithStand
+          position={[0, 0, 0]}
+          contents={chemicals}
+          isSelected={isSelected}
+          temperature={equipment.temperature}
+          onClick={handleEquipmentClick}
+          onChemicalAdd={handleChemicalAdd}
+          scale={[1.2, 1.2, 1.2]}
+        />
+      )}
+
+      {/* Advanced Visual Effects - Modified for burette compatibility */}
+      {activeEffects.bubbling && !equipmentType.includes('burette') && totalVolume > 10 && (
         <BubblingEffect
           position={[0, 0.2, 0]}
           effectType="bubbling"
@@ -454,7 +400,7 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
         />
       )}
 
-      {activeEffects.steam && (
+      {activeEffects.steam && !equipmentType.includes('burette') && totalVolume > 10 && (
         <SteamEffect
           position={[0, 0.5, 0]}
           effectType="steam"
@@ -463,7 +409,7 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
         />
       )}
 
-      {activeEffects.crystallization && (
+      {activeEffects.crystallization && totalVolume > 5 && (
         <CrystallizationEffect
           position={[0, -0.3, 0]}
           effectType="crystallization"
@@ -472,34 +418,45 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
         />
       )}
 
-      {activeEffects.heatGlow && (
-        <HeatGlowEffect
-          position={[0, 0, 0]}
-          effectType="heat_glow"
-          intensity={0.5}
-          duration={15000}
+      {/* Reaction-driven color transition */}
+      {currentReaction?.colorChange && (
+        <ColorTransitionEffect
+          position={[0, 0.2, 0]}
+          effectType="color_transition"
+          intensity={0.9}
+          duration={currentReaction.type === 'single_replacement' ? 30000 : 8000}
+          fromColor={currentReaction.colorChange.from}
+          toColor={currentReaction.colorChange.to}
         />
       )}
 
-      {/* Advanced Chemistry Visualizations */}
-      <TemperatureVisualization
-        temperature={equipment.temperature}
-        position={[0.8, 0.5, 0]}
-        equipmentType={equipmentType}
-      />
+      {/* Replace heat glow with intensified steam/simmer for heated liquids */}
+      {activeEffects.steam && (
+        <SteamEffect
+          position={[0, 0.5, 0]}
+          effectType="steam"
+          intensity={Math.min(((currentReaction?.heatGenerated || 20) / 100) + (equipment.isHeated ? 0.5 : 0), 1)}
+          duration={10000}
+        />
+      )}
 
-      {equipment.contents.length > 0 && (
+      {/* Burette-specific dispensing effect */}
+      {equipmentType.includes('burette') && equipment.isDispensing && (
+        <mesh position={[0, -1.5, 0]}>
+          <cylinderGeometry args={[0.01, 0.01, 0.3, 8]} />
+          <meshStandardMaterial 
+            color={chemicals.length > 0 ? chemicals[0].color : "#87CEEB"}
+            transparent 
+            opacity={0.7} 
+          />
+        </mesh>
+      )}
+
+      {/* Advanced Chemistry Visualizations - Adjusted positions for burette */}
+      {contentNames.length > 0 && (
         <PHIndicator
           pH={equipment.pH}
-          position={[-0.8, 0.5, 0]}
-        />
-      )}
-
-      {equipment.reactionType && equipment.reactionProgress > 0 && (
-        <ReactionProgressBar
-          progress={equipment.reactionProgress}
-          reactionType={equipment.reactionType}
-          position={[0, 1.5, 0]}
+          position={equipmentType.includes('burette') ? [-1.2, 1.5, 0] : [-0.8, 0.5, 0]}
         />
       )}
 
@@ -507,8 +464,16 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
         isSelected={isSelected}
         isHeated={equipment.isHeated}
         hasReaction={equipment.reactionType !== null}
-        position={[0, -0.8, 0]}
+        position={equipmentType.includes('burette') ? [0, -2, 0] : [0, -0.8, 0]}
       />
+
+      {/* Burette-specific volume indicator */}
+      {equipmentType.includes('burette') && equipment.volume && (
+        <mesh position={[1.2, 1.5, 0]}>
+          <planeGeometry args={[0.3, 0.1]} />
+          <meshBasicMaterial color="#000000" transparent opacity={0.8} />
+        </mesh>
+      )}
     </group>
   );
 };
