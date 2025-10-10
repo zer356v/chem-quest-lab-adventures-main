@@ -18,10 +18,12 @@ import { useExperimentProtection } from "@/hooks/useExperimentProtection";
 import { Beaker, Settings, ChevronDown, Play, RotateCcw, Save, Layers, AlertTriangle } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import axios from "axios";
-import useChemicalReactionEngine from "@/components/ChemicalReactionEngine";
-import useExperimentScoring, { ExperimentScorePanel } from "@/components/ExperimentScoring";
-import EducationalTooltips from "@/components/EducationalTooltips";
-import SafetyWarnings from "@/components/SafetyWarnings";
+import useChemicalReactionEngine from '@/components/ChemicalReactionEngine';
+import useExperimentScoring, { ExperimentScorePanel } from '@/components/ExperimentScoring';
+import EducationalTooltips from '@/components/EducationalTooltips';
+import SafetyWarnings from '@/components/SafetyWarnings';
+import logo from '../assets/Reactron_Logo.png'
+import { Navigate, useNavigate } from 'react-router-dom';
 
 interface PlacedEquipment {
   id: string;
@@ -45,12 +47,9 @@ const ScienceLab = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const [selectedEquipment, setSelectedEquipment] = useState<string | null>(null);
-  const [reactions, setReactions] = useState<any[]>([]);
-  const [placedEquipment, setPlacedEquipment] = useState<PlacedEquipment[]>([]);
-  const [experimentState, setExperimentState] = useState<ExperimentState>({ status: "idle", autoSaveEnabled: true });
-  const [isExperimentStarted, setIsExperimentStarted] = useState(false);
-  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [leftCollapsed, setLeftCollapsed] = useState(false);
+  const [rightCollapsed, setRightCollapsed] = useState(false);
+  const navigate = useNavigate();
 
   const reactionEngine = useChemicalReactionEngine();
   const scoring = useExperimentScoring();
@@ -257,17 +256,9 @@ const ScienceLab = () => {
         <header className="flex items-center justify-between px-6 py-3 bg-card border-b shadow-sm">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
-              <Beaker className="h-6 w-6 text-primary" />
+              
               <div>
-                <h1 className="text-base font-bold">Virtual Chemistry Lab</h1>
-                <p className="text-xs text-muted-foreground">
-                  {isExperimentStarted ? (
-                    <span className="text-green-600 flex items-center gap-1">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                      Experiment Active
-                    </span>
-                  ) : "Click Start to begin experimenting"}
-                </p>
+                <button onClick={() => navigate ('/')} ><img className="w-44 h-12 items-center justify-center -mb-2" src={logo}/> </button>
               </div>
             </div>
 
