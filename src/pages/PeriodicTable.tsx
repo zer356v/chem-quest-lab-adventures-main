@@ -99,7 +99,7 @@ const FullPeriodicTable2D: React.FC = () => {
       <h1 className="text-2xl font-bold">2D Periodic Table</h1>
     </div>
     <div className="flex-shrink-0">
-       <button className="bg-white text-center w-48 rounded-2xl h-10 relative text-black text-xl font-semibold group" type="button" 
+       <button className="bg-white text-center w-48 rounded-2xl h-10 relative text-black group" type="button" 
         onClick={() => {
           window.location.href = "/lab"; // replace with React Router if needed
         }}>

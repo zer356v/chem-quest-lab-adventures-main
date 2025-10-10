@@ -44,6 +44,12 @@ interface ExperimentState {
 const STORAGE_KEY = "virtual-lab-state";
 
 const ScienceLab = () => {
+  const [placedEquipment, setPlacedEquipment] = useState<PlacedEquipment[]>([]);
+  const [selectedEquipment, setSelectedEquipment] = useState<string | null>(null);
+  const [reactions, setReactions] = useState<any[]>([]);
+  const [experimentState, setExperimentState] = useState<ExperimentState>({ status: "idle", autoSaveEnabled: true });
+  const [isExperimentStarted, setIsExperimentStarted] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -284,18 +290,6 @@ const ScienceLab = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-1 px-3 py-1.5">
-                  <Layers className="w-4 h-4" /> Tools <ChevronDown className="w-3 h-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem>Results</DropdownMenuItem>
-                <DropdownMenuItem>Education</DropdownMenuItem>
-                <DropdownMenuItem>Equipment</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
 
           <UserMenu />
