@@ -207,7 +207,7 @@ export default function ChemistryLabProfilePage() {
   
    useEffect(()=>{
       const getScore = async ()=>{
-        const response = await axios.get(`http://localhost:3000/api/add-experiment/${user.uid}`);
+        const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/add-experiment/${user.uid}`);
         console.log(response.data);
         const userExperimentArray = response.data;
         const {score} = userExperimentArray[userExperimentArray.length - 1];
