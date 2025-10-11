@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(user);
         setLoading(false);
         console.log("User logged in");
-        console.log(user.uid);
       } else {
         console.log("No user is logged in");
       }
