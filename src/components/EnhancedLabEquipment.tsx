@@ -275,12 +275,10 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
 
   const handleEquipmentClick = () => {
     setSelectedEquipment(selectedEquipment === equipmentId ? null : equipmentId);
-    console.log(`Selected equipment: ${equipmentId}, Contents:`, contentNames);
   };
 
   // NEW: Enhanced chemical addition handler
   const handleChemicalAdd = (chemical: any, volume: number) => {
-    console.log(`Adding chemical: ${chemical.name}, Volume: ${volume}ml to ${equipmentId}`);
     
     // Update equipment state with new chemical
     setEquipment(prev => {
@@ -309,7 +307,6 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
   };
 
   const handleChemicalDrop = (chemical: string) => {
-    console.log(`Chemical ${chemical} dropped on ${equipmentId}`);
     // This is for backward compatibility - convert to new format
     const chemicalObj = {
       name: chemical,
@@ -320,7 +317,6 @@ export const EnhancedLabEquipment: React.FC<EnhancedLabEquipmentProps> = ({
 
   const handleBuretteDispense = () => {
     setEquipment(prev => ({ ...prev, isDispensing: !prev.isDispensing }));
-    console.log(`Burette ${equipmentId} dispensing toggled`);
   };
 
   const isSelected = selectedEquipment === equipmentId;
