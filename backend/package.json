@@ -20,6 +20,7 @@
     "firebase-admin": "^13.5.0",
     "nodemon": "^3.1.10",
     "helmet": "^8.1.0",
-    "tsx": "^4.0.0"
+    "tsx": "^4.0.0",
+    "@supabase/supabase-js": "^2.45.0"
   }
 }
