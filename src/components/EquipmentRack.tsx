@@ -97,7 +97,6 @@ export const EquipmentRack: React.FC<EquipmentRackProps> = ({ onEquipmentSelect 
     if (item.available > item.inUse) {
       setDraggedItem(item);
       setIsDragging(true);
-      console.log('Starting drag for:', item.name);
     }
   };
 
