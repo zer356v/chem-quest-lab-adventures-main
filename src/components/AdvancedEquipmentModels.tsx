@@ -114,13 +114,6 @@ const EnhancedLiquidRenderer: React.FC<EnhancedLiquidProps> = ({
   // Material calculation
   const liquidMaterial = useMemo(() => {
 
-    console.log("Material Debug:", {
-      contents,
-      totalVolume,
-      contentsLength: contents.length,
-      firstChemical: contents[0]?.name,
-      firstChemicalColor: contents[0] ? getChemicalProperties(contents[0].name).color : 'none'
-    });
 
     if (contents.length === 0) {
       const defaultProps = getChemicalProperties("Water");
@@ -199,15 +192,6 @@ const EnhancedLiquidRenderer: React.FC<EnhancedLiquidProps> = ({
   });
 
   if (liquidHeight <= 0) return null;
-
-  console.log("Liquid Debug:", {
-    totalVolume,
-    liquidHeight,
-    containerRadius,
-    containerType,
-    finalLiquidColor: liquidMaterial.color.getHexString(),
-    contentsDebug: contents
-  });
 
   return (
     <group position={position}>
@@ -347,14 +331,6 @@ export const RealisticBeaker: React.FC<AdvancedEquipmentProps> = ({
   const beakerRef = useRef<THREE.Group>(null);
   const specs = EQUIPMENT_SPECS[equipmentType];
 
-  console.log("Beaker Contents Debug:", {
-    contents,
-    totalVolume,
-    contentsCount: contents.length,
-    chemicalNames: contents.map(c => c.name),
-    chemicalColors: contents.map(c => c.color)
-  });
-
   // ENHANCED chemical library
   const availableChemicals = [
     { name: "Hydrochloric Acid", formula: "HCl", color: "#F5F5DC" },
@@ -392,12 +368,6 @@ export const RealisticBeaker: React.FC<AdvancedEquipmentProps> = ({
   ) as BeakerGLTFResult;
   const modelScale: [number, number, number] =
     equipmentType === "beaker-500ml" ? [0.1, 0.1, 0.1] : [0.08, 0.08, 0.08];
-
-  console.log("Beaker Debug:", {
-    totalVolume,
-    containerRadius: specs?.radius,
-    contents: contents.length,
-  });
 
   return (
     <>
